@@ -1,0 +1,16 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "title": "Web UI user update model.",
+    "description": "A patch applied to an existent Web UI user, used to update it.",
+    "type": "object",
+    "properties": {
+        "password": {
+            "description": "A password of the user.",
+            "type": "string"
+        },
+        "is_admin": {
+            "description": "Determines whether the user has admin permissions or not.",
+            "type": "boolean"
+        }
+    }
+}

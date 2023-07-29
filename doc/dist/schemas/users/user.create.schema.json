@@ -1,0 +1,23 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "title": "User creation model.",
+    "description": "A representation of a new user, used to create it.",
+    "type": "object",
+    "properties": {
+        "name": {
+            "description": "An unique username of the user",
+            "type": "string"
+        },
+        "full_name": {
+            "description": "A full name of the user.",
+            "type": "string"
+        },
+        "role": {
+            "description": "A role of the user.",
+            "type": "string"
+        }
+    },
+    "required": [
+        "id", "name", "full_name", "role"
+    ]
+}

@@ -1,0 +1,22 @@
+[package]
+name = "cherrydoor-web"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rocket = { version = "=0.5.0-rc.3", features = ["json", "secrets"]}
+rocket_contrib = "0.4.11"
+rocket_cors = "0.6.0-alpha2"
+serde = { version = "1.0", features = ["derive"] }
+sha256 = "1.1.3"
+cherrydoor-models = { path = "../cherrydoor-models" }
+cherrydoor-command = { path = "../cherrydoor-command" }
+diesel = "2.1.0"
+diesel-async = { version = "0.3.1", features = ["mysql", "bb8"] }
+async-mutex = "1.4.0"
+dotenv = "0.15.0"
+serde_json = "1.0.97"
+jsonwebtoken = "8.3.0"
+reqwest = { version = "0.11.18", features = ["json"] }

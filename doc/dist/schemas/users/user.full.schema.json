@@ -1,0 +1,41 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "title": "User full response model.",
+    "description": "A full representation of an existent user.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "description": "A database ID of the user",
+            "type": "integer"
+        },
+        "name": {
+            "description": "An unique username of the user",
+            "type": "string"
+        },
+        "full_name": {
+            "description": "A full name of the user.",
+            "type": "string"
+        },
+        "role": {
+            "description": "A role of the user.",
+            "type": "string"
+        },
+        "access_codes": {
+            "description": "An array of access codes belonging to this user.",
+            "type": "array",
+            "items": {
+                "$ref": "./access-codes/access-code.user.full.schema.json"
+            }
+        },
+        "permissions": {
+            "description": "An array of permissions this user has.",
+            "type": "array",
+            "items": {
+                "$ref": "../permissions/permission.brief.schema.json"
+            }
+        }
+    },
+    "required": [
+        "id", "name", "full_name", "role", "access_codes"
+    ]
+}

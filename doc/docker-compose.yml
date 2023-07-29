@@ -1,0 +1,11 @@
+# A docker-compose for setting up the documentation server
+
+version: '3'
+
+services:
+  www:
+    image: 'nginx:latest'
+    ports:
+      - '8080:80'
+    volumes:
+      - './dist:/usr/share/nginx/html:ro'

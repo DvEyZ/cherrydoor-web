@@ -1,0 +1,16 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "title": "User update model.",
+    "description": "A patch applied to an existent user, used to update it.",
+    "type": "object",
+    "properties": {
+        "full_name": {
+            "description": "A full name of the user.",
+            "type": "string"
+        },
+        "role": {
+            "description": "A role of the user.",
+            "type": "string"
+        }
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "title": "Access code full response model.",
+    "description": "A representation of a new access code, used to register it.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "description": "Database ID of the access code.",
+            "type": "integer"
+        },
+        "code": {
+            "description": "An unique sequence of characters, representing a RFID card ID.",
+            "type": "string"
+        },
+        "user": {
+            "description": "Database ID of the user owning this access code.",
+            "type": "integer"
+        }
+    },
+    "required": [
+        "id", "code", "user"
+    ]
+}

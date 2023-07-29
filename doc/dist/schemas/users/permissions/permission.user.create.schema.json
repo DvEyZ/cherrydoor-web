@@ -1,0 +1,15 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "title": "User-permission relation creation model.",
+    "description": "A representation of a new user-permission relation.",
+    "type": "object",
+    "properties": {
+        "permission_id": {
+            "description": "A database ID of a permission belonging to this relation.",
+            "type": "string"
+        }
+    },
+    "required": [
+        "permission_id"
+    ]
+}
