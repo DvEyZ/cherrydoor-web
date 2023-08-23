@@ -8,6 +8,7 @@ pub struct ErrorResponse {
     message :String
 }
 
+#[derive(Debug)]
 #[allow(dead_code)]
 pub enum ApiError {
     BadRequest(String),     // 400

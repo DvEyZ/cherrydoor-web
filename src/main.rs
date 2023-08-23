@@ -11,7 +11,7 @@ use guards::auth::SecretKeyWrapper;
 use rocket::{launch, routes, http::Method, catchers};
 
 use rocket_cors::{CorsOptions, AllowedOrigins};
-use routes::{auth, web_ui_users, users, permissions, access_profiles, access::{self, CommandAddress}, status};
+use routes::{auth, web_ui_users, users, permissions, access_profiles, access::{self, CommandAddress}, status, active_access_profile};
 
 #[launch]
 async fn rocket() -> _ {
@@ -28,6 +28,8 @@ async fn rocket() -> _ {
             .build(AsyncDieselConnectionManager::<AsyncMysqlConnection>::new(db_uri))
         .await.unwrap()
     );
+
+    let aacp = active_access_profile::ActiveAccessProfile::new(&db, std::env::var("COMMAND_ADDRESS").unwrap()).await;
 
     let cors = CorsOptions::default()
         .allowed_origins(AllowedOrigins::all())
@@ -46,6 +48,7 @@ async fn rocket() -> _ {
         .manage(db)
         .manage(key)
         .manage(command_addr)
+        .manage(aacp)
         .mount("/auth", routes![
             auth::authenticate,     // POST /
         ])
@@ -100,6 +103,10 @@ async fn rocket() -> _ {
         ])
         .mount("/status", routes![
             status::get
+        ])
+        .mount("/active-profile", routes![
+            active_access_profile::get, // GET /
+            active_access_profile::set  // POST /
         ])
         .register("/", catchers![
             error::unauthorized,

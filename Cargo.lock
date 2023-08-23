@@ -390,6 +390,7 @@ name = "cherrydoor-models"
 version = "0.1.0"
 dependencies = [
  "diesel",
+ "diesel-derive-enum",
  "serde",
 ]
 
@@ -730,6 +731,18 @@ dependencies = [
  "mysql_async",
  "mysql_common",
  "scoped-futures",
+]
+
+[[package]]
+name = "diesel-derive-enum"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "81c5131a2895ef64741dad1d483f358c2a229a3a2d1b256778cdc5e146db64d4"
+dependencies = [
+ "heck",
+ "proc-macro2 1.0.66",
+ "quote 1.0.28",
+ "syn 2.0.27",
 ]
 
 [[package]]

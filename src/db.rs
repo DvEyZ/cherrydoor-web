@@ -1,4 +1,4 @@
-use diesel_async::{pooled_connection::{bb8::{Pool, PooledConnection}}, AsyncMysqlConnection};
+use diesel_async::{pooled_connection::bb8::{Pool, PooledConnection}, AsyncMysqlConnection};
 
 use crate::error::ApiError;
 

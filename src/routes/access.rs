@@ -5,7 +5,8 @@ use cherrydoor_models::{
 use cherrydoor_command::Command;
 use diesel::{QueryDsl, SelectableHelper, ExpressionMethods, OptionalExtension, BelongingToDsl};
 use diesel_async::RunQueryDsl;
-use rocket::{post, State, serde::json::Json, response::status::NoContent, tokio::{net::TcpStream, io::{AsyncWriteExt, AsyncReadExt}}};
+use reqwest::StatusCode;
+use rocket::{post, State, serde::json::Json, response::status::NoContent};
 use serde::Deserialize;
 
 use crate::{db::{self, DB, get_connection}, error::ApiError, guards::auth::{Auth, OperatorUser}};
@@ -17,8 +18,6 @@ pub struct AccessCodeAccess {
 
 pub struct CommandAddress(pub String);
 
-type CommandResponse = Result<(), String>;
-
 #[post("/open")]
 pub async fn open(
     _auth :Auth<OperatorUser>,
@@ -27,7 +26,7 @@ pub async fn open(
     let command = &Command::new()
         .open_for(5000)
         .display_text_for("Wejdz".to_string(), 5000)
-        .set_color_for(0, 5000)
+        .set_color_for(0, 0, 0, 5000)
         .play_sound(1);
 
     let client = reqwest::Client::new();
@@ -37,14 +36,13 @@ pub async fn open(
         .send()
     .await {
         Ok(res) => {
-            match res.json::<CommandResponse>().await {
-                Ok(response) => {
-                    match response {
-                        Ok(_) => Ok(NoContent),
-                        Err(e) => Err(ApiError::Internal(format!("Command server returned error: {}", e)))
-                    }
+            match res.status() {
+                StatusCode::NO_CONTENT => {
+                    Ok(NoContent)
+                },
+                _ => {
+                    Err(ApiError::Internal(format!("Command server returned {}", res.text().await.unwrap_or("garbage".to_string()))))
                 }
-                Err(e) => Err(ApiError::Internal(format!("Command server returned garbage: {}", e)))
             }
         },
         Err(e) => Err(ApiError::Internal(format!("Error while connecting to command server: {}", e)))

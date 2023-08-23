@@ -1,6 +1,6 @@
-use cherrydoor_models::{models::{WebUIUser}, insert::WebUIUserInsert, update::WebUIUserUpdate, schema::web_ui_users};
+use cherrydoor_models::{models::WebUIUser, insert::WebUIUserInsert, update::WebUIUserUpdate, schema::web_ui_users};
 use diesel::{QueryDsl, SelectableHelper, ExpressionMethods, OptionalExtension, result};
-use diesel_async::{RunQueryDsl};
+use diesel_async::RunQueryDsl;
 use rocket::{get, post, patch, delete, serde::json::Json, State, response::status::Created};
 use serde::{Serialize, Deserialize};
 
