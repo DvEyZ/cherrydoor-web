@@ -1,0 +1,59 @@
+// Użytkownicy mający dostęp do pokoju.
+Table users {
+  id int [pk, increment]
+  name varchar [unique, not null] // Nazwa użytkownika
+  full_name varchar [not null] // Imię i nazwisko użytkownika
+  role varchar [not null] // Rola użytkownika (do wyświetlenia w panelu, bez wpływu na kontrolę dostępu)
+}
+
+// Kody dostępu zapisane na kartach RFID.
+Table access_codes {
+  id int [pk, increment]
+  code varchar [unique, not null] // Kod dostępu
+  user int [ref: > users.id, not null]    // Użytkownik, do którego przypisany jest kod
+}
+
+// Profile dostępu, określające uprawnienia wymagane do wejścia w momencie, gdy dany profil jest aktywny.
+Table access_profiles {
+  id int [pk, increment]
+  name varchar [unique, not null] // Nazwa profilu dostępu
+  description varchar [not null] // Opis profilu dostępu
+  display_text varchar [not null]  // Tekst wyświetlany na wyświetlaczu
+  color varchar [not null]  // Kolor wyświetlany podczas gdy profil jest aktywny
+  access_mode access_profile_access_mode [not null] // Tryb dostępu
+}
+
+Enum access_profile_access_mode {
+    OpenLock   // Drzwi fizycznie otwarte przez cały czas, prawa dostępu nie będą sprawdzane
+    AllowAnyone    // Dowolny identyfikator RFID otworzy drzwi, prawa dostępu nie będą sprawdzane
+    
+    CheckAccess    // Prawa dostępu będą normalnie sprawdzane
+}
+
+// Uprawnienia dostępu.
+Table permissions {
+  id int [pk, increment]
+  name varchar [unique, not null] // Nazwa uprawnienia
+  description varchar [not null] // Opis uprawnienia
+}
+
+// Relacja między uprawnieniami a profilami dostępu
+Table access_profiles_permissions {
+  access_profile_id int [pk, ref: > access_profiles.id, not null]     // Profil
+  permission_id int [pk, ref: > permissions.id, not null]     // Uprawnienie. Użytkownikom posiadającym je zostanie udzielony dostęp, gdy profil jest aktywny.
+}
+
+// Relacja między użytkownikami a uprawnieniami
+Table users_permissions {
+  user_id int [pk, ref: > users.id, not null]     // Użytkownik
+  permission_id int [pk, ref: > permissions.id, not null] // Uprawnienie, które użytkownik posiada.
+}
+
+// Użytkownicy panelu sieciowego
+Table web_ui_users {
+    id int [pk, increment]
+    name varchar [unique, not null] // Nazwa logowania użytkownika
+    password_hash varchar [not null]   // Hasz SHA-256 (512?) hasła użytkownika.
+    is_admin boolean [not null]    // Czy posiada uprawnienia administracyjne
+    ac_does_not_expire boolean [not null]  // Czy kod wygasa po godzinie
+}
