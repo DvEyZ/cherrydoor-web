@@ -1,7 +1,8 @@
 use cherrydoor_models::insert::AccessCodeInsert;
+use reqwest::StatusCode;
 use serde::Deserialize;
 
-use crate::db::get_connection;
+use crate::{db::get_connection, routes::access::CommandAddress};
 
 use super::*;
 
@@ -82,11 +83,49 @@ pub async fn manual_add<'a>(
 #[post("/<name>/access-codes/register")]
 pub async fn register<'a>(
     _auth :Auth<OperatorUser>,
+    command_addr :&State<CommandAddress>,
 
     name :&'a str,
     db :&State<DB>
 ) -> UserResponse {
-    Err(ApiError::NotImplemented("Work in progress.".to_string()))
+    let client = reqwest::Client::new();
+    let res = client.get(format!("{}/register", command_addr.0)).send().await;
+
+    let ac = match res {
+        Ok(v) => match v.status() {
+            StatusCode::OK => match v.text().await {
+                Ok(code) => code,
+                Err(_) => return Err(ApiError::Internal(String::from("Command server returned garbage,")))
+            },
+            StatusCode::NOT_FOUND => return Err(ApiError::NotFound(String::from("Request timed out."))),
+            _ => return Err(ApiError::Internal(format!("Command server returned {}", v.text().await.unwrap_or("garbage".to_string()))))
+        }
+        Err(e) => {
+            return Err(ApiError::Internal(format!("Command server returned {}", e)))
+        }
+    };
+
+    let code = AccessCodeCreate {
+        code: ac
+    };
+
+    let mut conn = get_connection(db).await?;
+    let user = get_user(name, &mut conn).await?;
+    
+    if let Err(e) = diesel::insert_into(schema::access_codes::table)
+        .values(code.into_insert(user.id))
+    .execute(&mut conn).await {
+        if let result::Error::DatabaseError(result::DatabaseErrorKind::UniqueViolation, _) = e {
+            return Err(ApiError::Conflict(format!("This access code is already registered.")))
+        } else {
+            return Err(ApiError::Internal(format!("{}", e)))
+        }
+    };
+    
+    match get_full_user(name, &mut conn).await {
+        Ok(user) => Ok(Json(user)),
+        Err(e) => Err(e)
+    }
 }
 
 #[delete("/<name>/access-codes/<id>")]

@@ -10,20 +10,23 @@ use crate::{db::{DB, get_connection}, error::ApiError, guards::auth::{Auth, Admi
 pub struct WebUIUserOutput {
     pub id :i32,
     pub name :String,
-    pub is_admin :bool
+    pub is_admin :bool,
+    pub ac_does_not_expire :bool
 }
 
 #[derive(Deserialize)]
 pub struct WebUIUserCreate {
     name :String,
     password :String,
-    is_admin :bool
+    is_admin :bool,
+    ac_does_not_expire :bool
 }
 
 #[derive(Deserialize)]
 pub struct WebUIUserPatch {
     password :Option<String>,
-    is_admin :Option<bool>
+    is_admin :Option<bool>,
+    ac_does_not_expire :Option<bool>
 }
 
 // Safety measure
@@ -32,7 +35,8 @@ impl From<WebUIUser> for WebUIUserOutput {
         Self {
             id: user.id,
             name: user.name,
-            is_admin: user.is_admin
+            is_admin: user.is_admin,
+            ac_does_not_expire: user.ac_does_not_expire
         }
     }
 }
@@ -42,7 +46,8 @@ impl WebUIUserCreate {
         WebUIUserInsert { 
             name: self.name, 
             password_hash: sha256::digest(self.password),
-            is_admin: self.is_admin
+            is_admin: self.is_admin,
+            ac_does_not_expire: self.ac_does_not_expire
         }
     }
 }
@@ -51,7 +56,8 @@ impl WebUIUserPatch {
     fn into_update(self) -> WebUIUserUpdate {
         WebUIUserUpdate {
             password_hash: self.password.map(sha256::digest),
-            is_admin: self.is_admin
+            is_admin: self.is_admin,
+            ac_does_not_expire: self.ac_does_not_expire
         }
     }
 }

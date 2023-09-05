@@ -3,7 +3,7 @@ pub mod permissions;
 
 use cherrydoor_models::{models::{User, AccessCode, Permission, UserPermission}, full::UserFull, schema::{users, self, users_permissions}, insert::UserInsert, update::UserUpdate};
 use diesel::{QueryDsl, SelectableHelper, ExpressionMethods, BelongingToDsl, OptionalExtension, result};
-use diesel_async::{RunQueryDsl};
+use diesel_async::RunQueryDsl;
 use rocket::{get, post, patch, delete, serde::json::Json, State, response::status::Created};
 
 use crate::{error::ApiError, db::{DB, DbConnection, get_connection}, guards::auth::{Auth, OperatorUser}};

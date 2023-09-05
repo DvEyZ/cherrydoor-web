@@ -11,7 +11,8 @@ pub struct SecretKeyWrapper {
 pub struct WebUIUserAuthorization {
     pub exp :u64,
     pub name :String,
-    pub is_admin :bool
+    pub is_admin :bool,
+    pub ac_does_not_expire :bool
 }
 
 pub trait AuthorizationProvider {
@@ -73,10 +74,6 @@ impl<T :AuthorizationProvider, 'r> FromRequest<'r> for Auth<T> {
             Ok(claim) => claim.claims,
             Err(_) => return Outcome::Failure((Status::Unauthorized, ()))
         };
-
-        if claim.exp < jsonwebtoken::get_current_timestamp() {
-            return Outcome::Failure((Status::Unauthorized, ()));
-        }
 
         if !T::authorize(&claim) {
             return Outcome::Failure((Status::Forbidden, ()))

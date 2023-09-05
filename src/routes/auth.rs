@@ -48,9 +48,12 @@ pub async fn authenticate(
     }
 
     let auth = WebUIUserAuthorization {
-        exp: jsonwebtoken::get_current_timestamp() + 3600,
+        exp: if !user.ac_does_not_expire {
+            jsonwebtoken::get_current_timestamp() + 3600
+        } else { u64::MAX },
         name: user.name,
-        is_admin: user.is_admin
+        is_admin: user.is_admin,
+        ac_does_not_expire: user.ac_does_not_expire
     };
 
     let token = match jsonwebtoken::encode(

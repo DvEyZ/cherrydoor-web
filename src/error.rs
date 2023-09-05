@@ -15,6 +15,7 @@ pub enum ApiError {
     Unauthorized(String),   // 401
     Forbidden(String),      // 403
     NotFound(String),       // 404
+    Timeout(String),        // 408
     Conflict(String),       // 409
 
     Internal(String),       // 500
@@ -28,6 +29,7 @@ impl Display for ApiError {
             Self::Unauthorized (s) |
             Self::Forbidden(s) |
             Self::NotFound(s) |
+            Self::Timeout(s) |
             Self::Conflict(s) |
             Self::Internal(s) |
             Self::NotImplemented(s) => s
@@ -42,6 +44,7 @@ impl ApiError {
             Self::Unauthorized(_) => Status::Unauthorized,
             Self::Forbidden(_) => Status::Forbidden,
             Self::NotFound(_) => Status::NotFound,
+            Self::Timeout(_) => Status::RequestTimeout,
             Self::Conflict(_) => Status::Conflict,
             Self::Internal(_) => Status::InternalServerError,
             Self::NotImplemented(_) => Status::NotImplemented
@@ -56,11 +59,17 @@ impl<'r> Responder<'r, 'static> for ApiError {
             message: self.to_string()
         }).unwrap();
         
-        Response::build()
-            .status(status)
+        let mut res = Response::build();
+        
+        res.status(status)
             .header(ContentType::JSON)
-            .sized_body(body.len(), Cursor::new(body))
-        .ok()
+            .sized_body(body.len(), Cursor::new(body));
+
+        if self.status() == Status::RequestTimeout {
+            res.raw_header("Connection", "close");
+        }
+
+        res.ok()
     }
 }
 

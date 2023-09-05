@@ -11,6 +11,8 @@ use serde::Deserialize;
 
 use crate::{db::{self, DB, get_connection}, error::ApiError, guards::auth::{Auth, OperatorUser}};
 
+use super::active_access_profile::ActiveAccessProfile;
+
 #[derive(Deserialize)]
 pub struct AccessCodeAccess {
     code :String
@@ -52,11 +54,13 @@ pub async fn open(
 #[post("/code", format = "application/json", data = "<access>")]
 pub async fn code(
     access :Json<AccessCodeAccess>,
+
+    aacp :&State<ActiveAccessProfile>,
     db :&State<DB>
 ) -> Result<NoContent, ApiError> {
     let mut conn = get_connection(db).await?;
 
-    let apn = db::get_active_profile_name().await?;
+    let apn = aacp.get().await;
 
     let ac :AccessCode = match access_codes::table
         .select(AccessCode::as_select())

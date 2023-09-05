@@ -12,7 +12,3 @@ pub async fn get_connection(db :& DB) -> Result<DbConnection<'_>, ApiError> {
         Err(e) => Err(ApiError::Internal(format!("{}", e)))
     }
 }
-
-pub async fn get_active_profile_name() -> Result<String, ApiError> {
-    Ok(String::from("break"))
-}
