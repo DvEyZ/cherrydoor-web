@@ -9,7 +9,7 @@ use reqwest::StatusCode;
 use rocket::{post, State, serde::json::Json, response::status::NoContent};
 use serde::Deserialize;
 
-use crate::{db::{self, DB, get_connection}, error::ApiError, guards::auth::{Auth, OperatorUser}};
+use crate::{db::{DB, get_connection}, error::ApiError, guards::auth::{Auth, OperatorUser}};
 
 use super::active_access_profile::ActiveAccessProfile;
 
